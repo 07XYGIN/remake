@@ -1,211 +1,241 @@
-# python
 
-## 1.Hello,word!
+---
 
-```py
-print('hello,word')
+# MySQL 使用文档
+
+## 目录
+
+- [1. 数据定义语言 (DDL)](#1-数据定义语言-ddl)
+  - [1.1 数据库操作](#11-数据库操作)
+  - [1.2 表结构操作](#12-表结构操作)
+- [2. 数据操作语言 (DML)](#2-数据操作语言-dml)
+- [3. 数据查询语言 (DQL)](#3-数据查询语言-dql)
+- [4. 数据控制语言 (DCL)](#4-数据控制语言-dcl)
+- [5. 增删改查 (CRUD) 示例](#5-增删改查-crud-示例)
+- [6. MySQL 常用数据类型](#6-mysql-常用数据类型)
+
+---
+
+## 1. 数据定义语言 (DDL)
+
+DDL 用于定义、修改和删除数据库及表结构。下面是常用的 DDL 语句示例：
+
+### 1.1 数据库操作
+
+```sql
+-- 显示所有数据库
+SHOW DATABASES;
+
+-- 创建数据库（如果不存在则创建），并可指定字符集和校对规则
+CREATE DATABASE IF NOT EXISTS database_name
+    DEFAULT CHARACTER SET utf8mb4
+    COLLATE utf8mb4_general_ci;
+
+-- 删除数据库（如果存在则删除）
+DROP DATABASE IF EXISTS database_name;
+
+-- 选择数据库
+USE database_name;
 ```
 
-## 2.字符串(str)
+### 1.2 表结构操作
 
-### 2.1 字符串的大小写
+```sql
+-- 显示当前数据库中的所有表
+SHOW TABLES;
 
-```py
-#1.首字母大写
-name = 'title'.title()
-#2. 字符串全部大写
-name = 'title'.upper()
-#3. 全字母小写
-name = 'title'.lower()
+-- 查看表结构（字段信息、数据类型、约束等）
+DESC table_name;
+
+-- 查看表的创建语句（详细信息，包括表注释等）
+SHOW CREATE TABLE table_name;
+
+-- 创建表
+CREATE TABLE table_name (
+    id INT AUTO_INCREMENT PRIMARY KEY COMMENT '主键ID',
+    username VARCHAR(50) NOT NULL COMMENT '用户名',
+    email VARCHAR(100) NOT NULL COMMENT '邮箱地址',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间'
+) COMMENT = '用户信息表';
 ```
 
-### 2.2 去除空白
+---
 
-```python
-#1.去除末尾空白
-name = 'title'.rstrip()
-#2.去除头部空白
-name = 'title'.lstrip()
-#3.去除所有空白
-name = 'title'.strip()
+## 2. 数据操作语言 (DML)
+
+DML 语句用于向数据库中插入、更新或删除数据。常见语句包括：
+
+```sql
+-- 插入数据
+INSERT INTO table_name (username, email)
+VALUES ('alice', 'alice@example.com');
+
+-- 插入多条数据
+INSERT INTO table_name (username, email)
+VALUES ('bob', 'bob@example.com'), ('charlie', 'charlie@example.com');
+
+-- 更新数据（注意 WHERE 条件，防止全表更新）
+UPDATE table_name
+SET email = 'new_email@example.com'
+WHERE username = 'alice';
+
+-- 删除数据
+DELETE FROM table_name
+WHERE username = 'charlie';
 ```
 
-## 3.制表符
+---
 
--   `\t` 向前缩进
--   `\n` 换行
+## 3. 数据查询语言 (DQL)
 
-## 4.列表
+DQL 主要用于从数据库中查询数据。常用的查询语句包括：
 
-```py
-list = ['first','second','three']
-#在末尾添加
-list.append('four')
-#在指定地址添加
-#<listName>.insert(_index,_object)
-list.insert(0,'one')
-#在指定地方删除
-#del <listName>[_index]
-del list[0]
-#获取删除的元素
-#<listName>.pop(_index)
-delData = list.pop(1)
-#删除列表内指定值
-#<listName>.remove(_value)
-list.remove('second')
-#查看数组内元素个数
-#len(listName)
-len(list)
-#列表的切片
-#<listName>[n?,m?] 可选 n是起点  m是终点 某个值为空时默认从头开始 全部为空时则为整个列表
-list[:,5]
+```sql
+-- 简单查询所有数据
+SELECT * FROM table_name;
+
+-- 条件查询
+SELECT id, username, email
+FROM table_name
+WHERE username LIKE 'a%';
+
+-- 分组和聚合查询
+SELECT COUNT(*) AS user_count, DATE(created_at) AS create_date
+FROM table_name
+GROUP BY DATE(created_at);
+
+-- 排序查询
+SELECT * FROM table_name
+ORDER BY created_at DESC;
+
+-- 分页查询
+SELECT * FROM table_name
+LIMIT 10 OFFSET 20;
 ```
 
-## 5.元组
+---
 
-元组里面的元素不可修改
+## 4. 数据控制语言 (DCL)
 
-```python
-lists = (1,2,3)
-lists[0] = 4 #error
-lists = (4,2,3) #OK
+DCL 用于管理数据库用户及其权限。常用语句如下：
+
+```sql
+-- 授予用户权限
+GRANT ALL PRIVILEGES ON database_name.* TO 'username'@'localhost' IDENTIFIED BY 'password';
+
+-- 撤销用户权限
+REVOKE ALL PRIVILEGES, GRANT OPTION FROM 'username'@'localhost';
+
+-- 刷新权限（使变更立即生效）
+FLUSH PRIVILEGES;
 ```
 
-## 6.条件判断
+---
 
-```py
-# 1.与或非
-and == &&
-or == ||
-! = !
-# 2.特定的值未包含再列表
-not in
-# 3.if-elif-else
-if :
-    elif:
-        else:
+## 5. 增删改查 (CRUD) 示例
+
+下面进一步结合 DML 和 DQL 展示常见的增删改查操作：
+
+### 5.1 增（Insert）
+
+```sql
+-- 增加单条记录
+INSERT INTO employees (name, position, salary)
+VALUES ('John Doe', 'Engineer', 70000);
+
+-- 增加多条记录
+INSERT INTO employees (name, position, salary)
+VALUES ('Jane Smith', 'Manager', 85000),
+       ('Bob Brown', 'Technician', 50000);
 ```
 
-## 7.字典
+### 5.2 删（Delete）
 
-```py
-#0.
-obj = {
-    'name':'job',
-    'age':10
-}
-print(obj['age'])
-#1. 在字典中添加键值对
-obj['set'] = "gril"
-#2. 修改键值对
-obj['set'] = 'woman'
-#3. 删除键值对
-del obj['set']
-#4. 遍历字典
-for key,value in obj.items():
-    print(key,value)
-#5.遍历字典中所有键
-for key in obj.keys():
-    print(key)
-#5.1 遍历字典中的所有值
-for values in obj.values():
-    print(values)
-#6. 按照某个顺序进行排列   for key in sorted('#顺序')
-for key in sorted(obj.keys()):
-    print(key)
+```sql
+-- 删除单条记录
+DELETE FROM employees
+WHERE name = 'Bob Brown';
+
+-- 根据条件删除多条记录
+DELETE FROM employees
+WHERE salary < 60000;
 ```
 
-## 8.类
+### 5.3 改（Update）
 
-```py
-class People:
-    #self 引用实例
-    def __init__(self, name, age):
-        self.name = name
-        self.age = age
-        # 可以对参数进行默认
-        # 并没有在形参中书写isHappy
-        self.isHappy = false
-    def eat(self):
-        return self.name  + '\n'+ 'eat apple'
+```sql
+-- 更新单条记录
+UPDATE employees
+SET salary = 75000
+WHERE name = 'John Doe';
 
-    # 使用类
-    zhangsan = People('zhangsan', 18)
-    eat = zhangsan.eat()
-
-    ##修改属性的值
-    ## 1.可以直接修改
-    zhangsan.age = 20
+-- 批量更新
+UPDATE employees
+SET position = 'Senior Engineer'
+WHERE position = 'Engineer';
 ```
 
-```py
-    #类的继承 super()
-class Person:
-    def __init__(self,age,name='P'):
-        self.age = age
-        self.name = name
-    def init(self):
-        print('fea',self.age,self.name)
+### 5.4 查（Select）
 
+```sql
+-- 查询所有记录
+SELECT * FROM employees;
 
-class People(Person):
-    def __init__(self,set,age,name):
-        self.set = set
-        super().__init__(age,name)
-    def get(self):
-        print('sonDef',self.set,self.age)
+-- 带条件的查询
+SELECT name, salary
+FROM employees
+WHERE salary >= 70000;
 
-b = People(1,'a','a')
-
-b.get()
-
-## 先执行son 然后执行fea
-#重写父类
-#可在⼦类中定义⼀个与要重写的⽗类⽅法同名的⽅法。这样，Python将不会考虑这个⽗类⽅法
+-- 使用排序和分页
+SELECT * FROM employees
+ORDER BY salary DESC
+LIMIT 5;
 ```
 
-## 9.文件读取
+---
 
-```py
-with open('文件路径') as fileProject:
-    contents = fileProject.read()
-    print(contents)
+## 6. MySQL 常用数据类型
 
-```
+MySQL 数据类型主要分为数字类型、字符串类型和日期/时间类型，常见数据类型说明如下：
 
-## 10.文件写入
+### 6.1 数字类型
 
-```py
-with open('文件路径','key') as file
-    file.read()  #读文件
-    file.readlines() #读文件的每行
-    file.write('nb') #写入文件
-```
+- **整型**：
+  - `INT`：整数类型（一般占 4 字节），范围 -2147483648 到 2147483647。
+  - `TINYINT`：小整数，通常占 1 字节，范围 -128 到 127。
+  - `SMALLINT`：小范围整数，占 2 字节。
+  - `MEDIUMINT`：中等范围整数，占 3 字节。
+  - `BIGINT`：大整数，占 8 字节。
 
--   key = w 写入文件
--   key = a 不清空文件内容继续写入文件
--   key = r 读取模式
--   key = r+ 读写模式
-    默认只读
--   注 若文件已经有内容 写入时会清空文件的内容 如果不想清空 请使用'a'
--   Python 只能将字符串写入文本文件。要将数值数据存储到文本文件中，必须先使用函数 str()将其转换为字符串格式
+- **浮点型和定点数**：
+  - `FLOAT`：单精度浮点数。
+  - `DOUBLE`：双精度浮点数。
+  - `DECIMAL(precision, scale)`：定点数，可以精确存储小数，适用于货币计算等场景。
 
-## 11.JSON
+### 6.2 字符串类型
 
-```py
-import json
-json.dump() #存数据
-json.load() #读数据
-```
+- **定长和变长字符串**：
+  - `CHAR(n)`：定长字符串，若实际字符长度不足 n，会自动补充空格。
+  - `VARCHAR(n)`：变长字符串，适用于大部分需要存储变化长度字符的场景。
 
-## 12.导入
+- **文本类型**：
+  - `TEXT`：用于存储大量文本数据，最大长度为 65,535 字节。
+  - `MEDIUMTEXT`：用于存储更大文本，最大长度为 16,777,215 字节。
+  - `LONGTEXT`：用于存储非常大的文本，最大长度为 4,294,967,295 字节。
 
-`form module_path import className,className1,className2....`
+- **二进制数据**：
+  - `BLOB`：用于存储二进制数据，最大长度为 65,535 字节。
+  - `MEDIUMBLOB`、`LONGBLOB` 与 TEXT 类型对应，用于更大数据。
 
-`import module_path`
+### 6.3 日期和时间类型
 
-`form module_path import *`
+- **日期/时间组合**：
+  - `DATETIME`：格式为 `YYYY-MM-DD HH:MM:SS`，用于存储日期和时间。
+  - `TIMESTAMP`：存储从1970年1月1日以来的秒数，可自动更新为当前时间。
 
+- **单独的日期或时间**：
+  - `DATE`：仅存储日期，格式 `YYYY-MM-DD`。
+  - `TIME`：仅存储时间，格式 `HH:MM:SS`。
+  - `YEAR`：存储年份，格式为 4 位数字或 2 位数字（建议使用 4 位）。
 
-
-
+---
