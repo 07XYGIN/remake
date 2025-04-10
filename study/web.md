@@ -362,3 +362,74 @@ console.log(count);
 
 # 备忘录
 
+## class
+
+~~~javascript
+
+class Persion{
+    constructor(a,b,c.....){
+        // 示例对象 每次调用类都先触发这个
+        this.a = a  //使用实例对象的参数
+        this.b = 0  //使用默认值
+    }
+    // 自定义方法
+    method1(a,b = 10){
+        // 可以使用 constructor 定义的示例对象
+        // 必须return 负责log为undefined 
+        // 可以含参,可以含有默认值
+        return this.a + a + b
+    }
+}
+// 使用这个类
+const a = new Persion(a,b,c.......)
+a.method1(a,b,c......)
+
+// 使用extends继承父类
+class oldPersion extends Persion{
+    // 可以使用父类的所有信息
+    // 子类写constructor会把父类的constructor覆盖
+    // 在子类写constructor写this之前要调用super
+    constructor(a1,b1, c1.......){
+        // super里可以修改父类constructor的参数
+        super(a)
+        this.a = a1
+    }
+    //同样可以改写父类的方法
+    method1(){}
+}
+~~~
+~~~javascript
+// 使用static实现类的静态属性 不需要实例化
+class Persion{
+   static a (a,b,......){
+    return 1
+    // 调用另一个static时使用this
+   }
+}
+console.log(Persion.a())
+~~~
+
+## 宏任务 && 微任务
+
+JS是单线程的只有一个调用栈 按照先进后出的原则 执行调用栈的时候会先执行同步任务 
+
+有异步任务时 调用栈会把异步任务放入队列里 
+
+异步任务分为宏任务和微任务 按照先进先出的原则
+
+
+宏任务:
+ - 程序被直接进行
+ - 事件的回调函数
+ - 定时器 / 延时器
+ - 动画请求帧 / IO
+
+微任务：
+ - promise相关所有方法
+
+运行顺序有 `eventloop` 事件循环
+
+事件循环是一个不断循环的机制 会不断去寻找可以执行的任务来执行
+
+调用栈清空后 
+- step1. 先执行微任务 全部执行完然后执行宏任务(微任务执行完可能会进行浏览器渲染)
